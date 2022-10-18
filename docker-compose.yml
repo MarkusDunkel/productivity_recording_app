@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  django_server:
+    build: .
+    volumes:
+      - type: bind
+        source: ./app/
+        target: /app/
+    ports:
+      - "8110:8110"

@@ -1,0 +1,133 @@
+:root {
+  font-size: 16px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0 0 0 0;
+  padding: 0;
+  border: 0;
+}
+
+body {
+  font-family: "Lato", sans-serif;
+}
+
+.sidenav {
+  float: left;
+  height: 100%;
+  width: 11rem;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: rgb(63, 78, 79);
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+  
+.sidenav * {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 22px;
+  color: #818181;
+  background-color: rgb(63, 78, 79);
+  display: inline-block;
+}
+
+.group * {
+  float: left;
+  padding: 0px;
+}
+  
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.sidenav button:hover {
+  color: #f1f1f1;
+}
+  
+.main {
+  float: left;
+  background-color:rgb(220, 215, 201);
+  width: calc(100% - 45rem);
+  height: 100vh;
+  margin-left: 160px; /* Same as the width of the sidenav */
+  font-size: 16px; /* Increased text to enable scrolling */
+}
+
+.main-heading {
+  display: block;
+  background-color:rgb(220, 215, 201);
+  height: 3rem;
+  padding-top: 0rem;
+  padding-left: 0.5rem;/*calc((100vw + 1rem - (10rem + 35rem + 7 * 5rem + 14 * 0.5rem)) / 2);*/
+  margin-left: 0;
+  color: rgb(63, 78, 79);
+}
+
+.hcenter {
+  background-color:rgb(220, 215, 201);
+  width: calc(7 * 5rem + 14 * 0.5rem);
+  margin: 0 auto;
+  height: 100vh;
+  padding-top: calc((100vh - 30rem - 3rem) / 2);
+}
+
+.time_boxes {
+  display: inline-block;
+  background-color:rgb(220, 215, 201);
+  padding: 0;
+  line-height: 0;
+}
+
+.sb_right {
+  float: left;
+  background-color: rgb(63, 78, 79);
+  width: 35rem;
+  height: 100vh;
+}
+
+.circ {
+  display:inline-block;
+  height: 5rem;
+  width: 5rem;
+  margin: 0.5rem;
+  background-color: #bbb;
+  border-radius: 50%;
+}
+
+.circ-text {
+  display:block;
+  width: 100%;
+  background-color: blue;
+  padding-left: 1rem;
+  color: rgb(63, 78, 79);
+}
+
+.red {
+  background-color:rgb(220, 215, 201);
+  border: 2px solid rgb(239, 111, 12);
+}
+  
+.blue {
+  background-color: rgb(220, 215, 201);
+  color: rgb(220, 215, 201);
+}
+
+.inner{background-color:rgb(220, 215, 201);
+  height: 2rem;
+  width: 2rem;
+  margin-left: -.2rem;
+  margin-top: -.2rem;
+  padding-top: 1rem;
+  border-color: rgb(220, 215, 201)
+}
+
+
+/*@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 0px;}
+    .main{margin-top: 0;}
+    .sidenav a {font-size: 18px;}
+      }*/

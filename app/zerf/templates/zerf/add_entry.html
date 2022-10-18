@@ -1,0 +1,156 @@
+<html>
+<head>
+<meta charset="UTF-8">
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/zerf_add_entry.css' %}?{% now "U" %}/">
+<script src="{% static 'js/jquery-3.6.1.js' %}"></script>
+
+<title>Add an entry</title>
+
+<script>
+    $(document).ready(function(){
+      $("#add").click(function(){
+        $(template).clone().appendTo("form_app");
+      });
+    });
+</script>
+
+<script>
+  function shuffle_between_days(day_num) {
+    var date_str = "{{date}}";
+    var day_max = "{{day_max}}";
+    var day_max_prev_month = "{{day_max_prev_month}}";
+
+    var [day, month, year] = date_str.split('.');
+    if (day == day_max && day_num > 0) {
+      if (month == 12) {
+        month = 1;
+        year = parseInt(year)+1;
+      } else {
+        month = parseInt(month)+1;
+      }
+      day = 1;
+      day_num = 0;
+    }
+    if (day == 1 && day_num < 0) {
+      if (month == 1) {
+        month = 12
+        year = parseInt(year)-1;
+      } else {
+        month = parseInt(month)-1;
+      }
+      day = day_max_prev_month;
+      day_num = 0;
+    }
+    window.location.href = "{% url 'add_entry' 0 %}".replace( '0', ((parseInt(day)+day_num)+"."+month+"."+year));
+  }
+</script>
+</head>
+
+<body>
+  <div class="sidenav">
+    <a href="{% url 'index' date %}">Overview</a><br />
+    <a href="{% url 'add_entry' curr_date %}">Current day</a><br />
+    <div class="group">
+    <button onclick=shuffle_between_days(-1)><==</button>
+    <div style="padding-left:4px; padding-right:4px"> / </div>
+    <button onclick=shuffle_between_days(1)>==></button>
+    </div><br />
+    <button id="add">Add</button><br />
+    <button type="submit" form="act_form" value="Save">Save</button>
+  </div>
+ 
+<div class="main">
+  <div class="hcenter">
+<h1>Add an achievement on the {{date}}</h1>
+<br>
+
+<div class="hidden">
+  <formBlock id="arg">
+    <div class="form-group-outer">
+      <div class="form-group-inner">
+      <input type="hidden" id="id" name="id" value="new">
+      <div class="form-single">
+        <form-text class="form-text" >Start time</form-text>
+        <input type="time" id="stname" name="stname[]">
+      </div>
+      <div class="between-form-single"></div>
+      <div class="form-single">
+        <form-text class="form-text" >End time</form-text>
+        <input type="time" id="etname" name="etname[]">
+      </div>
+      <div class="between-form-single"></div>
+      <div class="form-single">
+        <form-text class="form-text" >Group</form-text>
+        <select id ="grname" name = "grname[]">
+          {% for grname in group_names %}
+          <option class = "option" value={{grname}}>{{grname}}</option>
+          {% endfor %}
+        </select>
+      </div>
+      </div><br>
+      <div class="form-single">
+        <textarea type="text" id="descname" name="descname[]" placeholder="///Description" rows="4" cols="50"></textarea>
+      </div>
+    </div><br>
+  </formBlock>
+</div>
+
+<form id="act_form" action="/zerf/add_entry/{{date}}/" method="post">{% csrf_token %}
+<form_app id="form_app"></form_app>
+</form>
+
+</div>
+</div>
+</body>
+
+<script>
+    let template = $("formBlock").clone();
+</script>
+
+<script>
+  if ("{{ stock_len }}" > 0) {
+    for (let i = 0; i < "{{ stock_len }}"; i++) 
+        {
+        document.getElementById("form_app").innerHTML += document.getElementById("arg").innerHTML;
+        }
+    } else {
+    document.getElementById("form_app").innerHTML = document.getElementById("arg").innerHTML;
+    }
+</script>
+
+<script>
+  if ("{{ stock_len }}" > 0) {
+    var elements = document.getElementById("act_form").elements;
+  } else {
+    var elements = 0
+  }
+  var arrayLength = Array.from(elements).length;
+</script>
+  
+<script> 
+  const id_entries = JSON.parse("{{ids_entries}}".replace(/&quot;/g, '"'))
+  const start_entries = JSON.parse("{{start_entries}}".replace(/&quot;/g, '"'))
+  const end_entries = JSON.parse("{{end_entries}}".replace(/&quot;/g, '"'))
+  const group_entries = JSON.parse("{{group_entries}}".replace(/&quot;/g, '"'))
+  const desc_entries = JSON.parse("{{desc_entries}}".replace(/&quot;/g, '"'))
+  //https://stackoverflow.com/questions/19978600/how-to-loop-through-elements-of-forms-with-javascript
+  for (var i = 0, j=0, k=0, element; element = elements[i++];) {
+    if (element.id === "id") {
+      element.value = id_entries[j]
+      k++ }
+    if (element.id === "descname") { 
+      element.value = desc_entries[j] 
+      k++ }
+    else if (element.id === "stname") {
+      element.value = start_entries[j];
+      k++ }
+    else if (element.id === "etname") {
+      element.value = end_entries[j];
+      k++ }
+    else if (element.id === "grname") {
+      element.value = group_entries[j];
+      k++ }
+    if (k===5) {j++; k=0}
+  };
+</script>

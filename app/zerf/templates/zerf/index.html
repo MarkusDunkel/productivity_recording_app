@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% load static %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/zerf_index.css' %}?{% now "U" %}/">
+
+  <script>
+    function testscript(day_num) {
+      window.location.href = "{% url 'add_entry' 0 %}".replace( '0', 
+        day_num + "." + "{{month_str}}" + "." + "{{year_num}}");
+    }
+  </script>
+
+<script>
+  function shuffle_between_months(month_num) {
+    var date_str = "{{date}}";
+
+    var [day, month, year] = date_str.split('.');
+    if (month == 12 && month_num > 0) {
+      month = 1;
+      year = parseInt(year)+1;
+      month_num = 0;
+    }
+    if (month == 1 && month_num < 0) {
+      year = parseInt(year)-1;
+      month = 12;
+      month_num = 0;
+    }
+    window.location.href = "{% url 'index' 0 %}".replace( '0', ("01"+"."+(parseInt(month)+month_num)+"."+year));
+  }
+</script>
+</head>
+
+<body>
+  <div class="sidenav">
+    <a href="{% url 'index' curr_date %}">Current month</a><br />
+    <div class="group">
+      <button onclick=shuffle_between_months(-1)><==</button>
+      <div style="padding-left:4px; padding-right:4px"> / </div>
+      <button onclick=shuffle_between_months(1)>==></button>
+    </div><br />
+    <button id="add">Add</button><br />
+    <button type="submit" form="act_form" value="Save">Save</button>
+  </div>
+  
+  <div class="main">
+    <div class="hcenter">
+      <div class="main-heading"><h1>Monthly overview of {{month_name}} {{year_num}}</h1></div>
+        <div class="time_boxes" id="time_boxes"></div>
+    </div>
+
+      <script>
+        for (let i = 0; i < "{{first_weekd}}"; i++) {
+        document.getElementById("time_boxes").innerHTML += '<div class="circ blue"><div class="circ red inner">#1</div><div class="circ-text blue">00:00</div></div>';
+        }
+      </script>
+
+      <script>
+        const time_agg = JSON.parse("{{time_agg}}".replace(/&quot;/g, '"'))
+        const day_num = JSON.parse("{{day_num}}".replace(/&quot;/g, '"'))
+        for (let i = 0, j = 0, k = 0; i < day_num.length; i++) {
+          if (j === 6 || j === 6 - "{{first_weekd}}" && k == 0 ) {
+            document.getElementById("time_boxes").innerHTML += '<div class="circ red" onclick="testscript('+day_num[i]+')" style="cursor: pointer;"><div class="circ inner">#'+day_num[i]+'</div><br><div class="circ-text">'+time_agg[i]+'</div></div><br>';
+            j = 0;
+            k++;
+          } else {
+            document.getElementById("time_boxes").innerHTML += '<div class="circ red" onclick="testscript('+day_num[i]+')" style="cursor: pointer;"><div class="circ inner">#'+day_num[i]+'</div><div class="circ-text">'+time_agg[i]+'</div></div>';
+            j++;
+          }
+        }
+      </script>
+  </div>
+
+<div class="sb_right">
+  <a href="#about">About</a>
+  <a href="#services">Services</a>
+  <a href="#clients">Clients</a>
+  <a href="#contact">Contact</a>
+</div>
+
+</body>
+</html> 
