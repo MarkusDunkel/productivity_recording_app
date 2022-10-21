@@ -2,11 +2,18 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.db.models import Min
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import redirect
 import datetime as dt
 import calendar as c
 import json
 
 from zerf.models import Entry, Group
+
+@csrf_exempt
+def redirect_view(request):
+    curr_date = dt.datetime.now().strftime('%d.%m.%Y')
+    response = redirect(curr_date)
+    return response
 
 @csrf_exempt
 def index(request, in_date):
@@ -30,6 +37,7 @@ def index(request, in_date):
         date_entries.append(e.date)
 
     time_agg = []
+    time_agg_int = []
     day_num = []
     month_num = d[0].month
     month_name = tuple(['January', 'February', 'March', 'April', 'Mai', 'June', 'Juli', 'August', 'September', 'October', 'November', 'December'])[month_num-1]
@@ -41,17 +49,25 @@ def index(request, in_date):
         for i in range(len(date_entries)):
             if date == date_entries[i]:
                 time_agg[-1] += time_diff[i]
+        time_agg_int.append(time_agg[-1].total_seconds())
         time_agg_str = str(time_agg[-1])[:-3]
         if len(time_agg_str) == 4:
             time_agg_str = '0'+time_agg_str
         time_agg[-1] = time_agg_str
+ 
+    time_agg_max = max(time_agg_int)
+    for i in range(len(time_agg_int)):
+        if time_agg_int[i] > 0:
+            time_agg_int[i] /= time_agg_max
+        time_agg_int[i] = int (time_agg_int[i] * 10)
 
     # calculate number of days between the 1. and the last monday before
     first_weekd = d[0].weekday()
 
     time_agg = json.dumps (time_agg)
+    time_agg_int = json.dumps (time_agg_int)
     day_num = json.dumps (day_num)
-    context = {'curr_date': curr_date.strftime('%d.%m.%Y'), 'date': in_date, 'year_num': year_num, 'month_name': month_name, 'month_str': month_str, 'time_agg': time_agg, 'day_num': day_num, 'first_weekd': first_weekd}
+    context = {'curr_date': curr_date.strftime('%d.%m.%Y'), 'date': in_date, 'year_num': year_num, 'month_name': month_name, 'month_str': month_str, 'time_agg': time_agg, 'time_agg_int': time_agg_int, 'day_num': day_num, 'first_weekd': first_weekd}
 
     return render(request, 'zerf/index.html', context)
 
@@ -74,19 +90,23 @@ def add_entry(request, in_date):
         endtime_val = request.POST.getlist('etname[]')
         group_val = request.POST.getlist('grname[]')
         desc_val = request.POST.getlist('descname[]')
+        del_val = request.POST.getlist('delname[]')
         
         for i in range(len(starttime_val)):
-            if id_val[i] == 'new':
+            if id_val[i] == 'new' and del_val[i] != '1':
                 b = Entry(date = in_date, start_time = starttime_val[i], end_time = endtime_val[i], 
                     group = Group.objects.get(task_group_name=group_val[i]), description = desc_val[i])
                 b.save()
-            else:
+            elif id_val[i] != 'new':
                 b = Entry.objects.get(id=id_val[i])
                 setattr(b, 'start_time', starttime_val[i])
                 setattr(b, 'end_time', endtime_val[i])
                 setattr(b, 'group', Group.objects.get(task_group_name=group_val[i]))
                 setattr(b, 'description', desc_val[i])
                 b.save()
+            if del_val[i] == '1' and id_val[i] != 'new':
+                b = Entry.objects.get(id=id_val[i])
+                b.delete()
                 
     group_names = Group.objects.values_list('task_group_name', flat = True)
     

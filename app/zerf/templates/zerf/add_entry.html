@@ -45,6 +45,15 @@
     window.location.href = "{% url 'add_entry' 0 %}".replace( '0', ((parseInt(day)+day_num)+"."+month+"."+year));
   }
 </script>
+
+<script>
+act_form.addEventListener('submit', () => {
+  if(document.getElementById("delname").checked) {
+      document.getElementById('delname_default').disabled = true;
+  }
+}
+</script>
+
 </head>
 
 <body>
@@ -87,6 +96,12 @@
           <option class = "option" value={{grname}}>{{grname}}</option>
           {% endfor %}
         </select>
+      </div>
+      <div class="form-del">
+        <label>
+        <input type="hidden" name="delname[]" id="delname" value="0"><input hidden type="checkbox" onclick="this.previousSibling.value=1-this.previousSibling.value">
+        <div class="label-text">&#10006;</div>
+        </label>
       </div>
       </div><br>
       <div class="form-single">

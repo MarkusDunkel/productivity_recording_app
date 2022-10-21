@@ -4,6 +4,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {% load static %}
   <link rel="stylesheet" type="text/css" href="{% static 'css/zerf_index.css' %}?{% now "U" %}/">
+  <script src="{% static 'js/color-gradient.js' %}"></script>  
+
+<script>
+  const gradientArray = new Gradient()
+  .setColorGradient("#11b853", "EF5122")
+  .setMidpoint(11)
+  .getColors();
+  console.log(gradientArray);
+  gradientArray[0]="#3f4e4f"
+
+  const time_agg_int = JSON.parse("{{time_agg_int}}".replace(/&quot;/g, '"')) 
+  console.log(time_agg_int[0]);
+  console.log(time_agg_int[1]);
+</script>
 
   <script>
     function testscript(day_num) {
@@ -61,11 +75,16 @@
         const day_num = JSON.parse("{{day_num}}".replace(/&quot;/g, '"'))
         for (let i = 0, j = 0, k = 0; i < day_num.length; i++) {
           if (j === 6 || j === 6 - "{{first_weekd}}" && k == 0 ) {
-            document.getElementById("time_boxes").innerHTML += '<div class="circ red" onclick="testscript('+day_num[i]+')" style="cursor: pointer;"><div class="circ inner">#'+day_num[i]+'</div><br><div class="circ-text">'+time_agg[i]+'</div></div><br>';
+            if (time_agg[i]=="00:00") {
+              document.getElementById("time_boxes").innerHTML += '<div class="circ red" style="border: 2px solid '+gradientArray[time_agg_int[i]]+'; cursor: pointer;" onclick="testscript('+day_num[i]+')"><div class="circ inner">#'+day_num[i]+'</div><br><div class="circ-text">'+time_agg[i]+'</div></div><br>';
+            } else {
+              document.getElementById("time_boxes").innerHTML += '<div class="circ red" onclick="testscript('+day_num[i]+')" style="border: 2px solid '+gradientArray[time_agg_int[i]]+'; cursor: pointer;"><div class="circ inner">#'+day_num[i]+'</div><br><div class="circ-text">'+time_agg[i]+'</div></div><br>';
+            }
             j = 0;
             k++;
+
           } else {
-            document.getElementById("time_boxes").innerHTML += '<div class="circ red" onclick="testscript('+day_num[i]+')" style="cursor: pointer;"><div class="circ inner">#'+day_num[i]+'</div><div class="circ-text">'+time_agg[i]+'</div></div>';
+            document.getElementById("time_boxes").innerHTML += '<div class="circ red" onclick="testscript('+day_num[i]+')" style="border: 2px solid '+gradientArray[time_agg_int[i]]+'; cursor: pointer;"><div class="circ inner">#'+day_num[i]+'</div><div class="circ-text">'+time_agg[i]+'</div></div>';
             j++;
           }
         }
